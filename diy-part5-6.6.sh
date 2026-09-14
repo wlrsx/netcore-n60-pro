@@ -17,7 +17,7 @@ sed -i 's/192.168.6.1/10.10.5.1/g' package/base-files/files/bin/config_generate
 #sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
 # Modify hostname
-#sed -i 's/OpenWrt/P3TERX-Router/g' package/base-files/files/bin/config_generate
+sed -i 's/ImmortalWrt/N60 Pro/g' package/base-files/files/bin/config_generate
 
 # 允许从 WAN 口访问本机 1080 端口
 cat >> package/network/config/firewall/files/firewall.config <<EOF
