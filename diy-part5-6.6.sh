@@ -37,3 +37,37 @@ config rule
         option proto 'udp'
         option target 'ACCEPT'
 EOF
+
+# ===== 硬改 N60 Pro：2GB内存 + 512MB闪存(400M ubi + 100M data) DTS 补丁 =====
+python3 - <<'PYEOF'
+import pathlib
+
+dts = pathlib.Path("target/linux/mediatek/dts/mt7986a-netcore-n60-pro.dts")
+text = dts.read_text()
+
+# 内存改为 2GB
+mem_old = "reg = <0 0x40000000 0 0x20000000>;"
+mem_new = "reg = <0 0x40000000 0 0x80000000>;"
+assert mem_old in text, "内存reg匹配失败，DTS文件内容已变化，请检查后再编译！"
+text = text.replace(mem_old, mem_new)
+
+# 闪存分区表：ubi 改为 400MB，并新增 100MB 的 data 分区（对应你路由现有的分区布局）
+ubi_old = """partition@580000 {
+				label = "ubi";
+				reg = <0x0580000 0x7280000>;
+			};"""
+ubi_new = """partition@580000 {
+				label = "ubi";
+				reg = <0x580000 0x19000000>;
+			};
+
+			partition@19580000 {
+				label = "data";
+				reg = <0x19580000 0x6400000>;
+			};"""
+assert ubi_old in text, "分区表匹配失败，DTS文件内容已变化，请检查后再编译！"
+text = text.replace(ubi_old, ubi_new)
+
+dts.write_text(text)
+print("[OK] DTS 已打上 2GB内存 + 512MB闪存 补丁")
+PYEOF
