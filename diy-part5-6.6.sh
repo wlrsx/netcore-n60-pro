@@ -98,3 +98,12 @@ PYEOF
 # dts.write_text(text)
 # print("[OK] DTS 已打上 2GB内存 + 512MB闪存(单分区506.5MB) 补丁")
 # PYEOF
+
+DISTFEEDS="package/base-files/files/etc/opkg/distfeeds.conf"
+if [ ! -f "$DISTFEEDS" ]; then
+    echo "[ERROR] 找不到 $DISTFEEDS，源码目录结构可能变化，请检查！"
+    exit 1
+fi
+opkg_mirror=https://downloads.immortalwrt.org
+
+sed -i "s,https://mirrors.vsean.net/openwrt,$opkg_mirror,g" "$DISTFEEDS"
