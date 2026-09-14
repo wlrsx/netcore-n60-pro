@@ -110,7 +110,7 @@ PYEOF
 # print("[OK] DTS 已打上 2GB内存 + 512MB闪存(单分区506.5MB) 补丁")
 # PYEOF
 
-# ===== 修复 N60 Pro LED：补上缺失的 blue:wps(LAN总灯)，USB灯端口对齐原厂 =====
+# ===== LED 配置完全对齐参照固件（section名/显示名/mode 全部一致）=====
 python3 - <<'PYEOF'
 import pathlib
 
@@ -126,19 +126,19 @@ old = '''netcore,n60-pro)
 	;;'''
 
 new = '''netcore,n60-pro)
-	ucidef_set_led_netdev "lan1" "LAN1" "mdio-bus:05:green:lan" "lan1" "link tx rx"
-	ucidef_set_led_netdev "wanact" "WANACT" "mdio-bus:06:green:wan" "eth1" "tx rx"
-	ucidef_set_led_netdev "wanlink" "WANLINK" "blue:wan" "eth1" "link"
-	ucidef_set_led_netdev "wlan" "WLAN" "blue:wlan" "rax0" "link"
+	ucidef_set_led_netdev "wanlink" "WANLINK" "mdio-bus:06:green:wan" "eth1" "link_10 link_100 link_1000 link_2500 tx rx"
+	ucidef_set_led_netdev "lan_1" "LAN-1" "mdio-bus:05:green:lan" "lan1" "link_10 link_100 link_1000 link_2500 tx rx"
+	ucidef_set_led_netdev "wan" "WAN" "blue:wan" "eth1" "link"
+	ucidef_set_led_netdev "WIFI" "WIFI" "blue:wlan" "rax0" "link"
+	ucidef_set_led_usbport "USB" "USB" "blue:usb" "usbport" "usb1-port2"
 	ucidef_set_led_netdev "lan" "LAN" "blue:wps" "br-lan" "link_10 link_100 link_1000 link_2500 tx rx"
-	ucidef_set_led_usbport "usb" "USB" "blue:usb" "usbport" "usb1-port2"
 	;;'''
 
 assert old in text, "01_leds 脚本内容跟预期不一致，可能源码已更新，请检查后再编译！"
 text = text.replace(old, new)
 
 led_file.write_text(text)
-print("[OK] 已补上 blue:wps LAN总灯，USB灯端口改为 usbport+usb1-port2")
+print("[OK] LED配置已完全对齐参照固件（section名、显示名、mode全部一致）")
 PYEOF
 
 # 正常 LED 数据
