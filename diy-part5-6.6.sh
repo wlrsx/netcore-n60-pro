@@ -11,13 +11,23 @@
 #
 
 # Modify default IP
-#sed -i 's/192.168.1.1/192.168.50.5/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.6.1/10.10.5.1/g' package/base-files/files/bin/config_generate
 
 # Modify default theme
 #sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
 # Modify hostname
 #sed -i 's/OpenWrt/P3TERX-Router/g' package/base-files/files/bin/config_generate
+
+# 允许从 WAN 口访问本机 1080 端口
+cat >> package/network/config/firewall/files/firewall.config <<EOF
+config rule
+        option name 'Allow-WAN-1080'
+        option src 'wan'
+        option dest_port '1080'
+        option proto 'tcp udp'
+        option target 'ACCEPT'
+EOF
 
 # # 添加组播防火墙规则
 # cat >> package/network/config/firewall/files/firewall.config <<EOF
