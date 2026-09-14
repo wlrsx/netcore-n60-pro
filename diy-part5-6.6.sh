@@ -71,3 +71,30 @@ text = text.replace(ubi_old, ubi_new)
 dts.write_text(text)
 print("[OK] DTS 已打上 2GB内存 + 512MB闪存 补丁")
 PYEOF
+
+# # ===== 硬改 N60 Pro：2GB内存 + 512MB闪存(单一大分区506.5MB) DTS 补丁 =====
+# python3 - <<'PYEOF'
+# import pathlib
+
+# dts = pathlib.Path("target/linux/mediatek/dts/mt7986a-netcore-n60-pro.dts")
+# text = dts.read_text()
+
+# mem_old = "reg = <0 0x40000000 0 0x20000000>;"
+# mem_new = "reg = <0 0x40000000 0 0x80000000>;"
+# assert mem_old in text, "内存reg匹配失败，DTS文件内容已变化，请检查后再编译！"
+# text = text.replace(mem_old, mem_new)
+
+# ubi_old = """partition@580000 {
+# 				label = "ubi";
+# 				reg = <0x0580000 0x7280000>;
+# 			};"""
+# ubi_new = """partition@580000 {
+# 				label = "ubi";
+# 				reg = <0x580000 0x1FA80000>;
+# 			};"""
+# assert ubi_old in text, "分区表匹配失败，DTS文件内容已变化，请检查后再编译！"
+# text = text.replace(ubi_old, ubi_new)
+
+# dts.write_text(text)
+# print("[OK] DTS 已打上 2GB内存 + 512MB闪存(单分区506.5MB) 补丁")
+# PYEOF
