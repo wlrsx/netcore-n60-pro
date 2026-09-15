@@ -20,15 +20,33 @@ sed -i 's,https://mirrors.vsean.net/openwrt,https://downloads.immortalwrt.org,g'
 # Modify hostname
 sed -i 's/ImmortalWrt/N60-Pro/g' package/base-files/files/bin/config_generate
 
-# 允许从 WAN 口访问本机 1080 端口
-cat >> package/network/config/firewall/files/firewall.config <<EOF
-config rule
-        option name 'Allow-WAN-1080'
-        option src 'wan'
-        option dest_port '1080'
-        option proto 'tcp udp'
-        option target 'ACCEPT'
+# ==========================================
+# 允许从 WAN 口访问本机 1080 端口 (uci-defaults注入法)
+# ==========================================
+mkdir -p files/etc/uci-defaults
+cat > files/etc/uci-defaults/99-custom-firewall << "EOF"
+#!/bin/sh
+uci -q get firewall.allow_1080 >/dev/null && exit 0
+
+uci set firewall.allow_1080=rule
+uci set firewall.allow_1080.name='Allow-WAN-1080'
+uci set firewall.allow_1080.src='wan'
+uci set firewall.allow_1080.dest_port='1080'
+uci set firewall.allow_1080.proto='tcp udp'
+uci set firewall.allow_1080.target='ACCEPT'
+uci commit firewall
+exit 0
 EOF
+
+# # 允许从 WAN 口访问本机 1080 端口
+# cat >> package/network/config/firewall/files/firewall.config <<EOF
+# config rule
+#         option name 'Allow-WAN-1080'
+#         option src 'wan'
+#         option dest_port '1080'
+#         option proto 'tcp udp'
+#         option target 'ACCEPT'
+# EOF
 
 # # 添加组播防火墙规则
 # cat >> package/network/config/firewall/files/firewall.config <<EOF
